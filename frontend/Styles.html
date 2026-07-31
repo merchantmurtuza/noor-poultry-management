@@ -1,0 +1,18 @@
+<style>
+:root { --sidebar-width: 280px; --noor-dark: #172033; --noor-primary: #246bfe; }
+body { background: #f4f7fb; color: #172033; }
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { background: var(--noor-dark); color: #fff; flex: 0 0 var(--sidebar-width); padding: 1.25rem; }
+.brand { font-size: 1.35rem; font-weight: 800; margin-bottom: 2rem; letter-spacing: .03em; }
+.sidebar .nav-link { border: 0; border-radius: .75rem; color: #c8d2e4; padding: .85rem 1rem; text-align: left; background: transparent; }
+.sidebar .nav-link.active, .sidebar .nav-link:hover { background: rgba(255,255,255,.12); color: #fff; }
+.content { flex: 1; padding: 1.5rem; min-width: 0; }
+.topbar { align-items: center; display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+.topbar h1 { font-size: 1.75rem; font-weight: 800; margin: 0; }
+.metric-card { background: #fff; border-radius: 1rem; box-shadow: 0 .5rem 1.5rem rgba(23,32,51,.08); min-height: 145px; padding: 1.25rem; position: relative; overflow: hidden; }
+.metric-card span { color: #667085; font-weight: 700; text-transform: uppercase; font-size: .78rem; letter-spacing: .05em; }
+.metric-card strong { display: block; font-size: 2rem; margin-top: .75rem; }
+.metric-card i { bottom: .75rem; color: rgba(36,107,254,.15); font-size: 4rem; position: absolute; right: 1rem; }
+.table thead th { color: #667085; font-size: .8rem; text-transform: uppercase; }
+@media (max-width: 900px) { .app-shell { display: block; } .sidebar { min-height: auto; } .content { padding: 1rem; } .topbar { align-items: flex-start; flex-direction: column; } }
+</style>
