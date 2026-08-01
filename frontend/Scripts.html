@@ -1,0 +1,109 @@
+<script>
+(() => {
+  'use strict';
+
+  const state = { currentView: 'dashboard' };
+  const $ = selector => document.querySelector(selector);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    bindNavigation();
+    bindProductionForm();
+    $('#date').valueAsDate = new Date();
+    $('#refreshButton').addEventListener('click', refreshCurrentView);
+    loadDashboard();
+    loadSheds();
+  });
+
+  function bindNavigation() {
+    document.querySelectorAll('[data-view]').forEach(button => {
+      button.addEventListener('click', () => {
+        state.currentView = button.dataset.view;
+        document.querySelectorAll('[data-view]').forEach(item => item.classList.toggle('active', item === button));
+        $('#dashboardView').classList.toggle('d-none', state.currentView !== 'dashboard');
+        $('#productionView').classList.toggle('d-none', state.currentView !== 'production');
+        $('#pageTitle').textContent = state.currentView === 'dashboard' ? 'Dashboard' : 'Daily Production';
+        refreshCurrentView();
+      });
+    });
+  }
+
+  function bindProductionForm() {
+    $('#productionForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        showToast('Please complete all required fields with valid values.');
+        return;
+      }
+      const payload = Object.fromEntries(new FormData(form).entries());
+      setSaving(true);
+      google.script.run.withSuccessHandler(response => {
+        setSaving(false);
+        if (!response.success) {
+          showToast(response.message || 'Unable to save production entry.');
+          return;
+        }
+        form.reset();
+        form.classList.remove('was-validated');
+        $('#date').valueAsDate = new Date();
+        showToast(response.message || 'Production saved successfully.');
+        loadDashboard();
+      }).withFailureHandler(error => {
+        setSaving(false);
+        showToast(error.message || 'Unexpected save error.');
+      }).saveProduction(payload);
+    });
+  }
+
+  function refreshCurrentView() {
+    if (state.currentView === 'dashboard') loadDashboard();
+    if (state.currentView === 'production') loadSheds();
+  }
+
+  function loadDashboard() {
+    google.script.run.withSuccessHandler(response => {
+      if (!response.success) { showToast(response.message); return; }
+      renderDashboard(response.data);
+    }).withFailureHandler(error => showToast(error.message || 'Unable to load dashboard.')).getDashboard();
+  }
+
+  function loadSheds() {
+    google.script.run.withSuccessHandler(response => {
+      if (!response.success) { showToast(response.message); return; }
+      const select = $('#shedId');
+      select.innerHTML = '<option value="">Select shed</option>' + response.data.map(shed => `<option value="${escapeHtml(shed.id)}">${escapeHtml(shed.name)} (${escapeHtml(shed.breed || 'Breed N/A')})</option>`).join('');
+    }).withFailureHandler(error => showToast(error.message || 'Unable to load sheds.')).getSheds();
+  }
+
+  function renderDashboard(data) {
+    $('#todaysEggs').textContent = formatNumber(data.todaysEggs);
+    $('#productionPercent').textContent = `${formatNumber(data.productionPercent)}%`;
+    $('#feedToday').textContent = `${formatNumber(data.feedToday)} kg`;
+    $('#waterToday').textContent = `${formatNumber(data.waterToday)} L`;
+    $('#mortality').textContent = formatNumber(data.mortality);
+    $('#liveBirds').textContent = formatNumber(data.liveBirds);
+    const rows = data.recentEntries || [];
+    $('#recentEntries').innerHTML = rows.length ? rows.map(row => `<tr><td>${escapeHtml(row.date)}</td><td>${escapeHtml(row.shed)}</td><td>${formatNumber(row.eggs)}</td><td>${formatNumber(row.feedKg)} kg</td><td>${formatNumber(row.waterLitres)} L</td><td>${formatNumber(row.mortality)}</td><td>${escapeHtml(row.remarks)}</td></tr>`).join('') : '<tr><td colspan="7" class="text-center text-muted py-4">No production entries yet.</td></tr>';
+  }
+
+  function setSaving(isSaving) {
+    const button = $('#saveProductionButton');
+    button.disabled = isSaving;
+    button.innerHTML = isSaving ? '<span class="spinner-border spinner-border-sm me-1"></span>Saving...' : '<i class="bi bi-save me-1"></i>Save Production';
+  }
+
+  function showToast(message) {
+    $('#toastBody').textContent = message;
+    bootstrap.Toast.getOrCreateInstance($('#appToast')).show();
+  }
+
+  function formatNumber(value) {
+    return new Intl.NumberFormat().format(Number(value || 0));
+  }
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+  }
+})();
+</script>
