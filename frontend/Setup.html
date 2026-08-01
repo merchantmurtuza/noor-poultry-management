@@ -1,0 +1,22 @@
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white d-flex flex-column flex-md-row justify-content-between gap-2">
+    <div><h2 class="h5 mb-1">Primary Farm Setup</h2><p class="text-muted mb-0">Add opening birds per shed and opening feed stock for first-time use.</p></div>
+    <span id="setupStatusBadge" class="badge text-bg-secondary align-self-start">Checking setup...</span>
+  </div>
+  <div class="card-body">
+    <form id="primarySetupForm" class="row g-3" novalidate>
+      <div class="col-md-4"><label class="form-label" for="totalSheds">Total No. of Sheds</label><input class="form-control" type="number" min="1" id="totalSheds" name="totalSheds" required></div>
+      <div class="col-md-4"><label class="form-label" for="feedOpeningDate">Feed Opening Date</label><input class="form-control" type="date" id="feedOpeningDate" name="feedOpeningDate"></div>
+      <div class="col-md-4"><label class="form-label" for="openingFeedKg">Opening Feed Stock (kg)</label><input class="form-control" type="number" min="0" step="0.01" id="openingFeedKg" name="openingFeedKg" value="0"></div>
+      <div class="col-md-4"><label class="form-label" for="feedUnitCost">Feed Unit Cost</label><input class="form-control" type="number" min="0" step="0.01" id="feedUnitCost" name="feedUnitCost" value="0"></div>
+      <div class="col-12">
+        <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 mb-2">
+          <h3 class="h6 mb-0">Opening Stock of Birds / Shed</h3>
+          <button class="btn btn-sm btn-outline-primary" type="button" id="generateShedRowsButton"><i class="bi bi-plus-circle me-1"></i>Generate Shed Rows</button>
+        </div>
+        <div id="shedRows" class="shed-rows"></div>
+      </div>
+      <div class="col-12"><button id="savePrimarySetupButton" class="btn btn-primary" type="submit"><i class="bi bi-database-add me-1"></i>Save Primary Data</button></div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,190 @@
+<script>
+(() => {
+  'use strict';
+
+  const state = { currentView: 'dashboard' };
+  const $ = selector => document.querySelector(selector);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    bindNavigation();
+    bindMobileMenu();
+    bindProductionForm();
+    bindPrimarySetupForm();
+    $('#date').valueAsDate = new Date();
+    $('#feedOpeningDate').valueAsDate = new Date();
+    $('#refreshButton').addEventListener('click', refreshCurrentView);
+    $('#generateShedRowsButton').addEventListener('click', generateShedRows);
+    loadDashboard();
+    loadSheds();
+    loadPrimarySetupStatus();
+  });
+
+  function bindNavigation() {
+    document.querySelectorAll('[data-view]').forEach(button => {
+      button.addEventListener('click', () => {
+        state.currentView = button.dataset.view;
+        document.querySelectorAll('[data-view]').forEach(item => item.classList.toggle('active', item === button));
+        ['dashboard', 'production', 'setup'].forEach(view => {
+          $('#' + view + 'View').classList.toggle('d-none', state.currentView !== view);
+        });
+        $('#pageTitle').textContent = button.textContent.trim();
+        closeMobileMenu();
+        refreshCurrentView();
+      });
+    });
+  }
+
+  function bindMobileMenu() {
+    $('#menuButton').addEventListener('click', () => {
+      $('#sidebar').classList.add('show');
+      $('#mobileBackdrop').classList.add('show');
+    });
+    $('#mobileBackdrop').addEventListener('click', closeMobileMenu);
+  }
+
+  function closeMobileMenu() {
+    $('#sidebar').classList.remove('show');
+    $('#mobileBackdrop').classList.remove('show');
+  }
+
+  function bindProductionForm() {
+    $('#productionForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        showToast('Please complete all required fields with valid values.');
+        return;
+      }
+      const payload = Object.fromEntries(new FormData(form).entries());
+      setButtonSaving('#saveProductionButton', true, 'Saving...');
+      google.script.run.withSuccessHandler(response => {
+        setButtonSaving('#saveProductionButton', false, '<i class="bi bi-save me-1"></i>Save Production');
+        if (!response.success) { showToast(response.message || 'Unable to save production entry.'); return; }
+        form.reset();
+        form.classList.remove('was-validated');
+        $('#date').valueAsDate = new Date();
+        showToast(response.message || 'Production saved successfully.');
+        loadDashboard();
+      }).withFailureHandler(error => {
+        setButtonSaving('#saveProductionButton', false, '<i class="bi bi-save me-1"></i>Save Production');
+        showToast(error.message || 'Unexpected save error.');
+      }).saveProduction(payload);
+    });
+  }
+
+  function bindPrimarySetupForm() {
+    $('#primarySetupForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        showToast('Please complete primary setup fields.');
+        return;
+      }
+      const payload = collectPrimarySetupPayload(form);
+      setButtonSaving('#savePrimarySetupButton', true, 'Saving primary data...');
+      google.script.run.withSuccessHandler(response => {
+        setButtonSaving('#savePrimarySetupButton', false, '<i class="bi bi-database-add me-1"></i>Save Primary Data');
+        if (!response.success) { showToast(response.message || 'Unable to save primary setup.'); return; }
+        showToast(response.message || 'Primary setup saved successfully.');
+        loadSheds();
+        loadDashboard();
+        loadPrimarySetupStatus();
+      }).withFailureHandler(error => {
+        setButtonSaving('#savePrimarySetupButton', false, '<i class="bi bi-database-add me-1"></i>Save Primary Data');
+        showToast(error.message || 'Unexpected setup error.');
+      }).savePrimarySetup(payload);
+    });
+  }
+
+  function collectPrimarySetupPayload(form) {
+    const formData = Object.fromEntries(new FormData(form).entries());
+    return {
+      totalSheds: formData.totalSheds,
+      feedOpeningDate: formData.feedOpeningDate,
+      openingFeedKg: formData.openingFeedKg || 0,
+      feedUnitCost: formData.feedUnitCost || 0,
+      sheds: Array.from(document.querySelectorAll('.shed-row')).map(row => ({
+        id: row.querySelector('[name="shedId[]"]').value,
+        name: row.querySelector('[name="shedName[]"]').value,
+        breed: row.querySelector('[name="breed[]"]').value,
+        openingBirds: row.querySelector('[name="openingBirds[]"]').value,
+        placementDate: row.querySelector('[name="placementDate[]"]').value
+      }))
+    };
+  }
+
+  function generateShedRows() {
+    const count = Number($('#totalSheds').value || 0);
+    if (!Number.isInteger(count) || count <= 0) { showToast('Enter a valid total number of sheds first.'); return; }
+    $('#shedRows').innerHTML = Array.from({ length: count }, (_, index) => renderShedRow(index + 1)).join('');
+    document.querySelectorAll('.placement-date').forEach(input => { input.valueAsDate = new Date(); });
+  }
+
+  function renderShedRow(number) {
+    const padded = String(number).padStart(3, '0');
+    return `<div class="shed-row border rounded-3 p-3 mb-3"><div class="row g-3"><div class="col-12 col-md-2"><label class="form-label">Shed ID</label><input class="form-control" name="shedId[]" value="SHED-${padded}"></div><div class="col-12 col-md-3"><label class="form-label">Shed Name</label><input class="form-control" name="shedName[]" value="Shed ${number}" required></div><div class="col-12 col-md-2"><label class="form-label">Breed</label><input class="form-control" name="breed[]"></div><div class="col-12 col-md-2"><label class="form-label">Opening Birds</label><input class="form-control" type="number" min="0" name="openingBirds[]" required></div><div class="col-12 col-md-3"><label class="form-label">Placement Date</label><input class="form-control placement-date" type="date" name="placementDate[]" required></div></div></div>`;
+  }
+
+  function refreshCurrentView() {
+    if (state.currentView === 'dashboard') loadDashboard();
+    if (state.currentView === 'production') loadSheds();
+    if (state.currentView === 'setup') loadPrimarySetupStatus();
+  }
+
+  function loadDashboard() {
+    google.script.run.withSuccessHandler(response => {
+      if (!response.success) { showToast(response.message); return; }
+      renderDashboard(response.data);
+    }).withFailureHandler(error => showToast(error.message || 'Unable to load dashboard.')).getDashboard();
+  }
+
+  function loadSheds() {
+    google.script.run.withSuccessHandler(response => {
+      if (!response.success) { showToast(response.message); return; }
+      const select = $('#shedId');
+      select.innerHTML = '<option value="">Select shed</option>' + response.data.map(shed => `<option value="${escapeHtml(shed.id)}">${escapeHtml(shed.name)} (${escapeHtml(shed.breed || 'Breed N/A')})</option>`).join('');
+    }).withFailureHandler(error => showToast(error.message || 'Unable to load sheds.')).getSheds();
+  }
+
+  function loadPrimarySetupStatus() {
+    google.script.run.withSuccessHandler(response => {
+      if (!response.success) { showToast(response.message); return; }
+      const badge = $('#setupStatusBadge');
+      badge.className = 'badge align-self-start ' + (response.data.completed ? 'text-bg-success' : 'text-bg-warning');
+      badge.textContent = response.data.completed ? `Setup complete: ${formatNumber(response.data.totalSheds)} sheds` : 'Setup not completed';
+    }).withFailureHandler(error => showToast(error.message || 'Unable to load setup status.')).getPrimarySetupStatus();
+  }
+
+  function renderDashboard(data) {
+    $('#todaysEggs').textContent = formatNumber(data.todaysEggs);
+    $('#productionPercent').textContent = `${formatNumber(data.productionPercent)}%`;
+    $('#feedToday').textContent = `${formatNumber(data.feedToday)} kg`;
+    $('#waterToday').textContent = `${formatNumber(data.waterToday)} L`;
+    $('#mortality').textContent = formatNumber(data.mortality);
+    $('#liveBirds').textContent = formatNumber(data.liveBirds);
+    const rows = data.recentEntries || [];
+    $('#recentEntries').innerHTML = rows.length ? rows.map(row => `<tr><td data-label="Date">${escapeHtml(row.date)}</td><td data-label="Shed">${escapeHtml(row.shed)}</td><td data-label="Eggs">${formatNumber(row.eggs)}</td><td data-label="Feed">${formatNumber(row.feedKg)} kg</td><td data-label="Water">${formatNumber(row.waterLitres)} L</td><td data-label="Mortality">${formatNumber(row.mortality)}</td><td data-label="Remarks">${escapeHtml(row.remarks)}</td></tr>`).join('') : '<tr><td colspan="7" class="text-center text-muted py-4">No production entries yet.</td></tr>';
+  }
+
+  function setButtonSaving(selector, isSaving, label) {
+    const button = $(selector);
+    button.disabled = isSaving;
+    button.innerHTML = isSaving ? `<span class="spinner-border spinner-border-sm me-1"></span>${label}` : label;
+  }
+
+  function showToast(message) {
+    $('#toastBody').textContent = message;
+    bootstrap.Toast.getOrCreateInstance($('#appToast')).show();
+  }
+
+  function formatNumber(value) {
+    return new Intl.NumberFormat().format(Number(value || 0));
+  }
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+  }
+})();
+</script>

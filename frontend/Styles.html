@@ -1,0 +1,40 @@
+<style>
+:root { --sidebar-width: 280px; --noor-dark: #172033; --noor-primary: #246bfe; }
+body { background: #f4f7fb; color: #172033; }
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { background: var(--noor-dark); color: #fff; flex: 0 0 var(--sidebar-width); padding: 1.25rem; transition: transform .25s ease; z-index: 1040; }
+.brand { font-size: 1.35rem; font-weight: 800; margin-bottom: 2rem; letter-spacing: .03em; }
+.sidebar .nav-link { border: 0; border-radius: .75rem; color: #c8d2e4; padding: .85rem 1rem; text-align: left; background: transparent; width: 100%; }
+.sidebar .nav-link.active, .sidebar .nav-link:hover { background: rgba(255,255,255,.12); color: #fff; }
+.content { flex: 1; padding: 1.5rem; min-width: 0; }
+.topbar { align-items: center; display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+.topbar h1 { font-size: clamp(1.35rem, 5vw, 1.75rem); font-weight: 800; margin: 0; }
+.metric-card { background: #fff; border-radius: 1rem; box-shadow: 0 .5rem 1.5rem rgba(23,32,51,.08); min-height: 145px; padding: 1.25rem; position: relative; overflow: hidden; }
+.metric-card span { color: #667085; font-weight: 700; text-transform: uppercase; font-size: .78rem; letter-spacing: .05em; }
+.metric-card strong { display: block; font-size: clamp(1.5rem, 8vw, 2rem); margin-top: .75rem; }
+.metric-card i { bottom: .75rem; color: rgba(36,107,254,.15); font-size: 4rem; position: absolute; right: 1rem; }
+.table thead th { color: #667085; font-size: .8rem; text-transform: uppercase; }
+.mobile-backdrop { background: rgba(15, 23, 42, .55); display: none; inset: 0; position: fixed; z-index: 1030; }
+.mobile-backdrop.show { display: block; }
+.shed-row { background: #fbfcff; }
+@media (max-width: 991.98px) {
+  .app-shell { display: block; }
+  .sidebar { bottom: 0; left: 0; max-width: 86vw; overflow-y: auto; position: fixed; top: 0; transform: translateX(-100%); width: var(--sidebar-width); }
+  .sidebar.show { transform: translateX(0); }
+  .content { padding: 1rem; }
+  .topbar { align-items: flex-start; flex-direction: column; }
+  .topbar > div { width: 100%; }
+  #refreshButton { width: 100%; }
+}
+@media (max-width: 575.98px) {
+  .content { padding: .75rem; }
+  .metric-card { min-height: 118px; padding: 1rem; }
+  .card-body { padding: 1rem; }
+  .table-responsive { overflow: visible; }
+  table.table-mobile-stack thead, .table thead { display: none; }
+  .table tbody, .table tr, .table td { display: block; width: 100%; }
+  .table tr { border: 1px solid #e5e7eb; border-radius: .85rem; margin: .75rem; padding: .5rem; }
+  .table td { border: 0; display: flex; justify-content: space-between; gap: 1rem; padding: .45rem .25rem; }
+  .table td::before { color: #667085; content: attr(data-label); font-weight: 700; }
+}
+</style>

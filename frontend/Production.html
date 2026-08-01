@@ -1,0 +1,16 @@
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white"><h2 class="h5 mb-0">Daily Production Entry</h2></div>
+  <div class="card-body">
+    <form id="productionForm" class="row g-3" novalidate>
+      <div class="col-md-6"><label class="form-label" for="date">Date</label><input class="form-control" type="date" id="date" name="date" required></div>
+      <div class="col-md-6"><label class="form-label" for="shedId">Shed</label><select class="form-select" id="shedId" name="shedId" required><option value="">Select shed</option></select></div>
+      <div class="col-md-4"><label class="form-label" for="eggs">Eggs</label><input class="form-control" type="number" min="0" id="eggs" name="eggs" required></div>
+      <div class="col-md-4"><label class="form-label" for="brokenEggs">Broken Eggs</label><input class="form-control" type="number" min="0" id="brokenEggs" name="brokenEggs" required></div>
+      <div class="col-md-4"><label class="form-label" for="feedKg">Feed (kg)</label><input class="form-control" type="number" min="0" step="0.01" id="feedKg" name="feedKg" required></div>
+      <div class="col-md-4"><label class="form-label" for="waterLitres">Water (litres)</label><input class="form-control" type="number" min="0" step="0.01" id="waterLitres" name="waterLitres" required></div>
+      <div class="col-md-4"><label class="form-label" for="mortality">Mortality</label><input class="form-control" type="number" min="0" id="mortality" name="mortality" required></div>
+      <div class="col-12"><label class="form-label" for="remarks">Remarks</label><textarea class="form-control" id="remarks" name="remarks" rows="3"></textarea></div>
+      <div class="col-12"><button id="saveProductionButton" class="btn btn-primary" type="submit"><i class="bi bi-save me-1"></i>Save Production</button></div>
+    </form>
+  </div>
+</div>
