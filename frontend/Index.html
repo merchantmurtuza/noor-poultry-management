@@ -13,18 +13,29 @@
   <div class="mobile-backdrop" id="mobileBackdrop"></div>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <div class="brand"><i class="bi bi-egg-fill me-2"></i>NOOR ERP</div>
-      <nav class="nav flex-column gap-1">
-        <button class="nav-link active" data-view="dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</button>
+      <div class="brand"><span class="brand-icon"><i class="bi bi-egg-fill"></i></span><span>NOOR Poultry</span></div>
+      <nav class="nav flex-column gap-2">
+        <button class="nav-link active" data-view="dashboard"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</button>
         <button class="nav-link" data-view="production"><i class="bi bi-clipboard2-data me-2"></i>Daily Production</button>
         <button class="nav-link" data-view="setup"><i class="bi bi-database-add me-2"></i>Primary Setup</button>
       </nav>
+      <div class="sidebar-upgrade mt-auto">
+        <div class="upgrade-icon"><i class="bi bi-stars"></i></div>
+        <strong>NOOR Pro</strong>
+        <span>Mobile-ready poultry operations dashboard.</span>
+      </div>
     </aside>
     <main class="content">
       <header class="topbar">
-        <button id="menuButton" class="btn btn-outline-secondary d-lg-none" type="button" aria-label="Open menu"><i class="bi bi-list"></i></button>
-        <div><h1 id="pageTitle">Dashboard</h1><p class="text-muted mb-0">Production intelligence for poultry operations</p></div>
-        <button id="refreshButton" class="btn btn-outline-primary"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+        <div class="d-flex align-items-center gap-3 min-w-0">
+          <button id="menuButton" class="btn btn-light d-lg-none shadow-sm" type="button" aria-label="Open menu"><i class="bi bi-list"></i></button>
+          <div class="min-w-0"><h1 id="pageTitle">Dashboard</h1><p class="text-muted mb-0 d-none d-sm-block">Production intelligence for poultry operations</p></div>
+        </div>
+        <div class="topbar-actions">
+          <label class="search-box" aria-label="Search"><i class="bi bi-search"></i><input type="search" placeholder="Search here..."></label>
+          <button id="refreshButton" class="btn btn-outline-primary"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+          <div class="avatar" title="Admin">A</div>
+        </div>
       </header>
       <section id="dashboardView"><?!= include('frontend/Dashboard'); ?></section>
       <section id="productionView" class="d-none"><?!= include('frontend/Production'); ?></section>

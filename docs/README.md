@@ -4,7 +4,7 @@ NOOR Poultry ERP is a production-oriented poultry farm management application bu
 
 ## Features
 
-- Mobile-compatible responsive admin dashboard with collapsible dark sidebar and operational header.
+- Mobile-compatible responsive admin dashboard inspired by modern analytics dashboards, using a white, blue, and red visual theme with a collapsible sidebar.
 - Daily production capture for eggs, broken eggs, feed, water, mortality, and remarks.
 - First-time primary setup for total sheds, opening birds per shed, and opening feed stock.
 - Google Sheets persistence through a dedicated database gateway.

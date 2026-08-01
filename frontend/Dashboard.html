@@ -1,12 +1,27 @@
-<div class="row g-3 mb-4" id="dashboardCards">
-  <div class="col-sm-6 col-xl-4"><div class="metric-card"><span>Today's Eggs</span><strong id="todaysEggs">0</strong><i class="bi bi-egg"></i></div></div>
-  <div class="col-sm-6 col-xl-4"><div class="metric-card"><span>Production %</span><strong id="productionPercent">0%</strong><i class="bi bi-graph-up-arrow"></i></div></div>
-  <div class="col-sm-6 col-xl-4"><div class="metric-card"><span>Feed Today</span><strong id="feedToday">0 kg</strong><i class="bi bi-basket"></i></div></div>
-  <div class="col-sm-6 col-xl-4"><div class="metric-card"><span>Water Today</span><strong id="waterToday">0 L</strong><i class="bi bi-droplet"></i></div></div>
-  <div class="col-sm-6 col-xl-4"><div class="metric-card"><span>Mortality</span><strong id="mortality">0</strong><i class="bi bi-heart-pulse"></i></div></div>
-  <div class="col-sm-6 col-xl-4"><div class="metric-card"><span>Live Birds</span><strong id="liveBirds">0</strong><i class="bi bi-feather"></i></div></div>
-</div>
-<div class="card border-0 shadow-sm">
-  <div class="card-header bg-white"><h2 class="h5 mb-0">Recent Entries</h2></div>
-  <div class="table-responsive"><table class="table table-hover align-middle mb-0 table-mobile-stack"><thead><tr><th>Date</th><th>Shed</th><th>Eggs</th><th>Feed</th><th>Water</th><th>Mortality</th><th>Remarks</th></tr></thead><tbody id="recentEntries"><tr><td colspan="7" class="text-center text-muted py-4">Loading...</td></tr></tbody></table></div>
+<div class="dashboard-grid">
+  <section class="panel sales-panel">
+    <div class="panel-header"><div><h2>Today's Farm Summary</h2><p>Daily production overview</p></div><button class="btn btn-sm btn-light"><i class="bi bi-download me-1"></i>Export</button></div>
+    <div class="summary-grid">
+      <div class="metric-card bg-red-soft"><span>Today's Eggs</span><strong id="todaysEggs">0</strong><small>Collected today</small><i class="bi bi-egg-fill"></i></div>
+      <div class="metric-card bg-orange-soft"><span>Feed Today</span><strong id="feedToday">0 kg</strong><small>Consumed today</small><i class="bi bi-basket-fill"></i></div>
+      <div class="metric-card bg-green-soft"><span>Production %</span><strong id="productionPercent">0%</strong><small>Eggs vs live birds</small><i class="bi bi-graph-up-arrow"></i></div>
+      <div class="metric-card bg-blue-soft"><span>Live Birds</span><strong id="liveBirds">0</strong><small>Current flock</small><i class="bi bi-feather"></i></div>
+    </div>
+  </section>
+  <section class="panel insight-panel">
+    <div class="panel-header"><div><h2>Production Insights</h2><p>Egg, feed and water trend</p></div></div>
+    <div class="line-chart" aria-label="Production insights"><span class="line line-blue"></span><span class="line line-red"></span><span class="line line-green"></span></div>
+    <div class="chart-legend"><span><i class="dot blue"></i>Eggs</span><span><i class="dot red"></i>Feed</span><span><i class="dot green"></i>Water</span></div>
+  </section>
+  <section class="panel mini-panel"><h2>Water Today</h2><strong id="waterToday">0 L</strong><div class="spark spark-blue"></div></section>
+  <section class="panel mini-panel"><h2>Mortality</h2><strong id="mortality">0</strong><div class="spark spark-red"></div></section>
+  <section class="panel recent-panel">
+    <div class="panel-header"><div><h2>Recent Entries</h2><p>Latest shed production records</p></div></div>
+    <div class="table-responsive"><table class="table table-hover align-middle mb-0 table-mobile-stack"><thead><tr><th>Date</th><th>Shed</th><th>Eggs</th><th>Feed</th><th>Water</th><th>Mortality</th><th>Remarks</th></tr></thead><tbody id="recentEntries"><tr><td colspan="7" class="text-center text-muted py-4">Loading...</td></tr></tbody></table></div>
+  </section>
+  <section class="panel target-panel">
+    <div class="panel-header"><div><h2>Target vs Reality</h2><p>Operational balance</p></div></div>
+    <div class="bar-chart"><span style="--h:55%"></span><span style="--h:72%"></span><span style="--h:49%"></span><span style="--h:82%"></span><span style="--h:64%"></span><span style="--h:90%"></span></div>
+    <div class="chart-legend"><span><i class="dot blue"></i>Target</span><span><i class="dot red"></i>Reality</span></div>
+  </section>
 </div>
